@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+scikit-learn
+xgboost
+shap
+pandas
+numpy
+firebase-admin
+google-generativeai
+python-dotenv
+pydantic

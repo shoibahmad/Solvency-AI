@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Premium Dark Palette */
+  --color-seismo-bg: #030014;
+  --color-seismo-panel: rgba(255, 255, 255, 0.03);
+  --color-seismo-border: rgba(255, 255, 255, 0.08);
+  --color-seismo-hover: rgba(255, 255, 255, 0.08);
+  
+  /* Risk colors */
+  --color-risk-low: #10b981;
+  --color-risk-med: #f59e0b;
+  --color-risk-high: #f43f5e;
+  
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+:root {
+  --background: #030014;
+  --foreground: #f8fafc;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+  /* Ambient background glow */
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(244, 63, 94, 0.15) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Custom utilities for premium glass panels */
+@utility panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid var(--color-seismo-border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility text-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Animated gradient utility */
+@utility text-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
