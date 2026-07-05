@@ -87,9 +87,6 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden p-6 md:p-10">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-rose-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -110,7 +107,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-white/5 hover:bg-indigo-500/20 border border-white/10 hover:border-indigo-500/50 text-indigo-300 text-sm font-semibold transition-all">
+            <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 text-blue-300 text-sm font-semibold transition-all">
               Officer Terminal &rarr;
             </Link>
             <button onClick={signOut} className="text-white/40 hover:text-white text-sm font-semibold transition-colors">
@@ -140,9 +137,9 @@ export default function AdminPage() {
                 transition={{ delay: 0.1 }}
                 className="panel p-6 relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center gap-3 text-white/50 mb-2 font-semibold uppercase tracking-widest text-xs relative z-10">
-                  <Users className="w-4 h-4 text-indigo-400" /> Total Borrowers
+                  <Users className="w-4 h-4 text-blue-400" /> Total Borrowers
                 </div>
                 <div className="text-4xl font-mono font-bold text-white relative z-10">{stats.total}</div>
               </motion.div>

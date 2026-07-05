@@ -24,7 +24,12 @@ export default function IntakePage() {
     account_vintage_months: "12",
     missed_payments_6m: "0",
     late_payments_12m: "0",
-    state: "CA",
+    state: "MH",
+    employment_length_months: "24",
+    liquid_assets: "10000",
+    loan_amount_requested: "50000",
+    previous_defaults: "0",
+    education_level: "Bachelor",
     unstructured_notes: ""
   });
 
@@ -50,10 +55,8 @@ export default function IntakePage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden p-6 md:p-10">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-rose-500/10 blur-[120px] rounded-full pointer-events-none" />
       
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,7 +74,7 @@ export default function IntakePage() {
             </h1>
             <p className="text-white/40 text-sm font-medium">Provision new entity into the risk assessment pipeline.</p>
           </div>
-          <div className="flex items-center gap-2 text-indigo-400 text-sm font-mono bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+          <div className="flex items-center gap-2 text-blue-400 text-sm font-mono bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]">
             <Database className="w-4 h-4" /> Firebase Cloud Mode
           </div>
         </header>
@@ -87,7 +90,7 @@ export default function IntakePage() {
               className="panel p-8 space-y-6"
             >
               <div className="flex items-center gap-2 mb-2">
-                <Database className="w-5 h-5 text-indigo-400" />
+                <Database className="w-5 h-5 text-blue-400" />
                 <h3 className="font-bold text-white tracking-wide">Structured Telemetry</h3>
               </div>
               <div className="h-px w-full bg-gradient-to-r from-white/20 to-transparent mb-6"></div>
@@ -96,17 +99,19 @@ export default function IntakePage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Applicant Entity Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20 placeholder-white/20" placeholder="e.g. John Doe" />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20 placeholder-white/20" placeholder="e.g. John Doe" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">State / Region</label>
-                    <select name="state" value={formData.state} onChange={handleChange} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20 appearance-none cursor-pointer">
-                      <option value="CA">California (CA)</option>
-                      <option value="NY">New York (NY)</option>
-                      <option value="TX">Texas (TX)</option>
-                      <option value="FL">Florida (FL)</option>
-                      <option value="IL">Illinois (IL)</option>
-                      <option value="WA">Washington (WA)</option>
+                    <select name="state" value={formData.state} onChange={handleChange} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer">
+                      <option value="MH">Maharashtra (Mumbai)</option>
+                      <option value="DL">Delhi (NCR)</option>
+                      <option value="KA">Karnataka (Bengaluru)</option>
+                      <option value="TN">Tamil Nadu (Chennai)</option>
+                      <option value="TG">Telangana (Hyderabad)</option>
+                      <option value="GJ">Gujarat (Ahmedabad)</option>
+                      <option value="WB">West Bengal (Kolkata)</option>
+                      <option value="UP">Uttar Pradesh (Lucknow)</option>
                     </select>
                   </div>
                 </div>
@@ -114,11 +119,11 @@ export default function IntakePage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Annual Income ($)</label>
-                    <input type="number" name="income" value={formData.income} onChange={handleChange} required className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20" placeholder="75000" />
+                    <input type="number" name="income" value={formData.income} onChange={handleChange} required className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" placeholder="75000" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Loan Class</label>
-                    <select name="loanType" value={formData.loanType} onChange={handleChange} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20 appearance-none cursor-pointer">
+                    <select name="loanType" value={formData.loanType} onChange={handleChange} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer">
                       <option value="Personal">Personal</option>
                       <option value="Home">Home</option>
                       <option value="Auto">Auto</option>
@@ -130,23 +135,55 @@ export default function IntakePage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Active Loans</label>
-                    <input type="number" name="existing_loans" value={formData.existing_loans} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20" />
+                    <input type="number" name="existing_loans" value={formData.existing_loans} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Credit Util. (0-1)</label>
-                    <input type="number" step="0.01" name="credit_utilization" value={formData.credit_utilization} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20" />
+                    <input type="number" step="0.01" name="credit_utilization" value={formData.credit_utilization} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Account Age (mo)</label>
-                    <input type="number" name="account_vintage_months" value={formData.account_vintage_months} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20" />
+                    <input type="number" name="account_vintage_months" value={formData.account_vintage_months} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">DTI Ratio</label>
-                    <input type="number" step="0.01" name="dti_ratio" value={formData.dti_ratio} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-indigo-500/50 outline-none transition-all focus:ring-2 focus:ring-indigo-500/20" />
+                    <input type="number" step="0.01" name="dti_ratio" value={formData.dti_ratio} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Employ Length (mo)</label>
+                    <input type="number" name="employment_length_months" value={formData.employment_length_months} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Liquid Assets ($)</label>
+                    <input type="number" name="liquid_assets" value={formData.liquid_assets} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Requested Loan ($)</label>
+                    <input type="number" name="loan_amount_requested" value={formData.loan_amount_requested} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Past Defaults</label>
+                    <input type="number" name="previous_defaults" value={formData.previous_defaults} onChange={handleChange} className="text-mono w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20" />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Education Level</label>
+                  <select name="education_level" value={formData.education_level} onChange={handleChange} className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:bg-white/5 focus:border-blue-500/50 outline-none transition-all focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer">
+                    <option value="High School">High School</option>
+                    <option value="Bachelor">Bachelor's Degree</option>
+                    <option value="Master">Master's Degree</option>
+                    <option value="PhD">Doctorate / PhD</option>
+                  </select>
                 </div>
               </div>
             </motion.div>
@@ -193,7 +230,7 @@ export default function IntakePage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] disabled:opacity-50 hover:-translate-y-1"
+              className="flex items-center gap-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] disabled:opacity-50 hover:-translate-y-1"
             >
               {loading ? (
                 <>Processing...</>

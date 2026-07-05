@@ -30,11 +30,19 @@ class BorrowerRequest(BaseModel):
     missed_payments_6m: int
     late_payments_12m: int
     loan_type: str # 'Personal', 'Home', 'Auto', 'Mortgage'
+    
+    # New features
+    employment_length_months: int
+    liquid_assets: float
+    loan_amount_requested: float
+    previous_defaults: int
+    education_level: str
+    
     unstructured_notes: Optional[str] = ""
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Solvency AI API"}
+    return {"message": "Welcome to Solvency AI API v2.0"}
 
 @app.post("/predict")
 def predict_default(request: BorrowerRequest):
@@ -52,6 +60,11 @@ def predict_default(request: BorrowerRequest):
             'missed_payments_6m': request.missed_payments_6m,
             'late_payments_12m': request.late_payments_12m,
             'loan_type': request.loan_type,
+            'employment_length_months': request.employment_length_months,
+            'liquid_assets': request.liquid_assets,
+            'loan_amount_requested': request.loan_amount_requested,
+            'previous_defaults': request.previous_defaults,
+            'education_level': request.education_level,
             'alternate_signal_risk_score': alternate_score
         }
         

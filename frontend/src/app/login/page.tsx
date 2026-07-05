@@ -43,10 +43,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-rose-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-emerald-500/5 blur-[150px] rounded-full pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -56,10 +52,10 @@ export default function LoginPage() {
       >
         <div className="panel p-8 md:p-10 relative overflow-hidden group">
           {/* Subtle hover effect on the panel itself */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-rose-500/0 group-hover:from-indigo-500/5 group-hover:to-rose-500/5 transition-colors duration-700 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-transparent to-rose-500/0 group-hover:from-blue-500/5 group-hover:to-rose-500/5 transition-colors duration-700 pointer-events-none"></div>
 
           <div className="flex justify-center mb-6">
-            <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20 text-blue-400 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
               <Activity className="w-8 h-8" />
             </div>
           </div>
@@ -89,7 +85,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none transition-all focus:bg-white/5 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none transition-all focus:bg-white/5 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
                 placeholder="officer@solvency.ai"
                 required
               />
@@ -100,7 +96,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none transition-all focus:bg-white/5 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none transition-all focus:bg-white/5 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
                 placeholder="••••••••"
                 required
               />
@@ -109,7 +105,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] disabled:opacity-50 mt-2 flex justify-center items-center gap-2"
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] disabled:opacity-50 mt-2 flex justify-center items-center gap-2"
             >
               {loading ? (
                 "Authenticating..."
@@ -140,7 +136,7 @@ export default function LoginPage() {
           </button>
           
           <div className="mt-8 pt-6 border-t border-white/5 text-sm text-center text-white/40 font-medium relative z-10">
-            Unregistered clearance? <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 transition-colors hover:underline">Request access</Link>
+            Unregistered clearance? <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors hover:underline">Request access</Link>
           </div>
         </div>
       </motion.div>

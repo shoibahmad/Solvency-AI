@@ -37,13 +37,13 @@ export function GlobalLoader() {
           animate={{ opacity: 1, backdropFilter: "blur(24px)" }}
           exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
           transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#09090b]/40 pointer-events-none"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/40 pointer-events-none"
         >
           <div className="relative flex items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute w-32 h-32 rounded-full border border-indigo-500/20 border-t-indigo-500 border-b-rose-500"
+              className="absolute w-32 h-32 rounded-full border border-blue-500/20 border-t-blue-500 border-b-rose-500"
             />
             <motion.div
               animate={{ rotate: -360 }}
@@ -51,7 +51,7 @@ export function GlobalLoader() {
               className="absolute w-24 h-24 rounded-full border border-rose-500/20 border-t-rose-500 border-l-amber-500"
             />
             <div className="relative bg-black/40 p-4 rounded-full shadow-[0_0_30px_rgba(99,102,241,0.3)] backdrop-blur-md border border-white/10">
-              <Activity className="w-8 h-8 text-indigo-400" />
+              <Activity className="w-8 h-8 text-blue-400" />
             </div>
           </div>
           
@@ -61,11 +61,11 @@ export function GlobalLoader() {
             transition={{ delay: 0.2 }}
             className="mt-8 flex flex-col items-center"
           >
-            <h2 className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-rose-300 to-amber-300">
+            <h2 className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-rose-300 to-amber-300">
               Processing
             </h2>
             <p className="text-white/40 font-mono text-sm mt-2 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
               Connecting to secure enclave...
             </p>
           </motion.div>

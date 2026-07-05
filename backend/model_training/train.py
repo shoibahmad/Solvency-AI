@@ -18,7 +18,7 @@ def generate_synthetic_data(n_samples=5000):
     # Dates for time-based split
     dates = pd.date_range(start='2021-01-01', periods=n_samples, freq='h')
     
-    # Features
+    # Features (v1)
     income = np.random.lognormal(mean=11.0, sigma=0.5, size=n_samples) # Mean ~ $60k
     existing_loans = np.random.poisson(lam=1.5, size=n_samples)
     credit_utilization = np.random.beta(a=2, b=5, size=n_samples) # Mostly low, some high
@@ -27,7 +27,14 @@ def generate_synthetic_data(n_samples=5000):
     missed_payments_6m = np.random.poisson(lam=0.2, size=n_samples)
     late_payments_12m = np.random.poisson(lam=0.5, size=n_samples)
     loan_types = np.random.choice(['Personal', 'Home', 'Auto', 'Mortgage'], size=n_samples)
-    alternate_signal_risk_score = np.random.uniform(0, 10, size=n_samples) # e.g. from Gemini
+    alternate_signal_risk_score = np.random.uniform(0, 10, size=n_samples)
+    
+    # New Features (v2)
+    employment_length_months = np.random.randint(0, 360, size=n_samples) # 0 to 30 years
+    liquid_assets = np.random.lognormal(mean=10.0, sigma=1.0, size=n_samples) # Cash on hand
+    loan_amount_requested = np.random.lognormal(mean=10.5, sigma=0.8, size=n_samples)
+    previous_defaults = np.random.poisson(lam=0.1, size=n_samples) # Rare but heavy penalty
+    education_level = np.random.choice(['High School', 'Bachelor', 'Master', 'PhD'], size=n_samples, p=[0.4, 0.4, 0.15, 0.05])
     
     df = pd.DataFrame({
         'date': dates,
@@ -39,7 +46,13 @@ def generate_synthetic_data(n_samples=5000):
         'missed_payments_6m': missed_payments_6m,
         'late_payments_12m': late_payments_12m,
         'alternate_signal_risk_score': alternate_signal_risk_score,
-        'loan_type': loan_types
+        'loan_type': loan_types,
+        
+        'employment_length_months': employment_length_months,
+        'liquid_assets': liquid_assets,
+        'loan_amount_requested': loan_amount_requested,
+        'previous_defaults': previous_defaults,
+        'education_level': education_level
     })
     
     # Calculate synthetic risk
@@ -50,11 +63,15 @@ def generate_synthetic_data(n_samples=5000):
         (df['late_payments_12m'] * 1.5) +
         (df['alternate_signal_risk_score'] * 0.5) -
         (np.log1p(df['income']) * 0.5) -
-        (df['account_vintage_months'] * 0.01)
+        (df['account_vintage_months'] * 0.01) -
+        (df['employment_length_months'] * 0.005) -
+        (np.log1p(df['liquid_assets']) * 0.3) +
+        (np.log1p(df['loan_amount_requested']) * 0.4) +
+        (df['previous_defaults'] * 5.0) # Huge penalty for past defaults
     )
     
     # Add noise
-    risk_score += np.random.normal(0, 1, size=n_samples)
+    risk_score += np.random.normal(0, 1.5, size=n_samples)
     
     # Determine default (1) or not (0). Baseline is ~20%
     threshold = np.percentile(risk_score, 80)
@@ -66,7 +83,7 @@ def generate_synthetic_data(n_samples=5000):
     return df
 
 def main():
-    print("Generating synthetic data...")
+    print("Generating synthetic data v2.0...")
     df = generate_synthetic_data(10000)
     
     # Time-based split: First 80% train, last 20% test
@@ -77,7 +94,9 @@ def main():
     features = [
         'income', 'existing_loans', 'credit_utilization', 'dti_ratio',
         'account_vintage_months', 'missed_payments_6m', 'late_payments_12m',
-        'alternate_signal_risk_score', 'loan_type'
+        'alternate_signal_risk_score', 'loan_type',
+        'employment_length_months', 'liquid_assets', 'loan_amount_requested',
+        'previous_defaults', 'education_level'
     ]
     target = 'default_12m'
     
@@ -87,11 +106,8 @@ def main():
     y_test = test_df[target]
     
     # Preprocessing
-    categorical_features = ['loan_type']
+    categorical_features = ['loan_type', 'education_level']
     numeric_features = [f for f in features if f not in categorical_features]
-    
-    # We will use one-hot encoding for the categorical feature.
-    # To keep features directly understandable by SHAP, we will transform X_train into a dataframe.
     
     encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
     
@@ -119,33 +135,24 @@ def main():
     neg_count = len(y_train) - pos_count
     scale_pos_weight = neg_count / pos_count
     
-    print("Training XGBoost...")
+    print("Training XGBoost v2.0...")
     xgb_model = XGBClassifier(
-        n_estimators=100,
-        max_depth=4,
-        learning_rate=0.1,
+        n_estimators=150,
+        max_depth=5,
+        learning_rate=0.08,
         scale_pos_weight=scale_pos_weight,
         random_state=42
     )
     xgb_model.fit(X_train_proc, y_train)
     
-    print("Training Random Forest...")
-    rf_model = RandomForestClassifier(
-        n_estimators=100,
-        max_depth=6,
-        class_weight='balanced',
-        random_state=42
-    )
-    rf_model.fit(X_train_proc, y_train)
-    
     # Evaluate
-    for name, model in [("XGBoost", xgb_model), ("Random Forest", rf_model)]:
-        y_pred = model.predict(X_test_proc)
-        y_prob = model.predict_proba(X_test_proc)[:, 1]
-        print(f"--- {name} ---")
-        print(classification_report(y_test, y_pred))
-        print(f"AUC-PR: {average_precision_score(y_test, y_prob):.4f}")
-        print(f"F1: {f1_score(y_test, y_pred):.4f}\n")
+    print("Evaluating XGBoost v2.0...")
+    y_pred = xgb_model.predict(X_test_proc)
+    y_prob = xgb_model.predict_proba(X_test_proc)[:, 1]
+    
+    print(classification_report(y_test, y_pred))
+    print(f"AUC-PR: {average_precision_score(y_test, y_prob):.4f}")
+    print(f"F1: {f1_score(y_test, y_pred):.4f}\n")
     
     # Save the primary model and the encoder
     os.makedirs('../models', exist_ok=True)

@@ -19,9 +19,6 @@ export default function ModelsPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-rose-500/10 blur-[120px] rounded-full pointer-events-none -z-10 -translate-x-1/3 translate-y-1/3" />
 
       <main className="flex-1 max-w-6xl w-full mx-auto p-6 md:p-10 pt-32">
         <motion.div 
@@ -30,11 +27,11 @@ export default function ModelsPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 mb-6 relative">
-            <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full animate-pulse" />
-            <Cpu className="w-8 h-8 text-indigo-400 relative z-10" />
+          <div className="inline-flex items-center justify-center p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20 mb-6 relative">
+            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
+            <Cpu className="w-8 h-8 text-blue-400 relative z-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-white/70 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-200 to-white/70 mb-4">
             Solvency AI Engine Architecture
           </h1>
           <p className="text-lg text-white/50 max-w-2xl mx-auto">
@@ -92,16 +89,16 @@ export default function ModelsPage() {
 
           {/* Gemini 2.5 Pro Section */}
           <motion.div variants={itemVariants} className="panel p-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-duration-500" />
             
             <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 relative">
-                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full animate-pulse" />
-                <Brain className="w-6 h-6 text-indigo-400 relative z-10" />
+              <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 relative">
+                <div className="absolute inset-0 bg-blue-500/20 blur-md rounded-full animate-pulse" />
+                <Brain className="w-6 h-6 text-blue-400 relative z-10" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-white">Google Gemini 2.5 Pro</h2>
-                <p className="text-indigo-400/80 font-mono text-sm tracking-widest uppercase">Cognitive Risk Engine</p>
+                <p className="text-blue-400/80 font-mono text-sm tracking-widest uppercase">Cognitive Risk Engine</p>
               </div>
             </div>
 
@@ -123,13 +120,13 @@ export default function ModelsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-black/30 border border-white/5 p-4 rounded-xl">
-                <div className="flex items-center gap-2 text-indigo-400/70 text-xs font-bold uppercase tracking-widest mb-1">
+                <div className="flex items-center gap-2 text-blue-400/70 text-xs font-bold uppercase tracking-widest mb-1">
                   <Database className="w-4 h-4" /> Data Type
                 </div>
                 <div className="text-white/90 font-medium">Unstructured Notes</div>
               </div>
               <div className="bg-black/30 border border-white/5 p-4 rounded-xl">
-                <div className="flex items-center gap-2 text-indigo-400/70 text-xs font-bold uppercase tracking-widest mb-1">
+                <div className="flex items-center gap-2 text-blue-400/70 text-xs font-bold uppercase tracking-widest mb-1">
                   <Zap className="w-4 h-4" /> Capabilities
                 </div>
                 <div className="text-white/90 font-medium">Reasoning & GenAI</div>
@@ -161,8 +158,8 @@ export default function ModelsPage() {
                 <div className="text-emerald-400 font-bold mb-1">XGBoost</div>
                 <div className="text-xs text-white/60">PD Calculation</div>
               </div>
-              <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 text-center shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                <div className="text-indigo-400 font-bold mb-1">Gemini 2.5 Pro</div>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-center shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                <div className="text-blue-400 font-bold mb-1">Gemini 2.5 Pro</div>
                 <div className="text-xs text-white/60">Signal & Narrative</div>
               </div>
             </div>

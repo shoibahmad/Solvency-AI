@@ -26,18 +26,28 @@ export default function BorrowerDetailPage() {
   // Animation controls for the counting effect
   const [displayProb, setDisplayProb] = useState(0);
 
+  const [errorMsg, setErrorMsg] = useState<string>("");
+
   const fetchPrediction = async (featuresToUse: any, isSimulation = false) => {
     try {
       if (isSimulation) setSimLoading(true);
       else setLoading(true);
+      setErrorMsg("");
 
-      const res = await fetch("http://localhost:8000/predict", {
+      const apiUrl = typeof window !== "undefined" 
+        ? `http://${window.location.hostname}:8000/predict`
+        : "http://localhost:8000/predict";
+
+      const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(featuresToUse)
       });
       
-      if (!res.ok) throw new Error("Failed to fetch prediction");
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`API Error (${res.status}): ${errText}`);
+      }
       
       const data = await res.json();
       setResult(data);
@@ -53,6 +63,7 @@ export default function BorrowerDetailPage() {
         showToast("Simulation completed", "success");
       }
     } catch (err: any) {
+      setErrorMsg(err.message);
       showToast(`Failed to analyze: ${err.message}`, "error");
     } finally {
       setLoading(false);
@@ -77,6 +88,11 @@ export default function BorrowerDetailPage() {
           missed_payments_6m: Number(borrowerData.missed_payments_6m) || 0,
           late_payments_12m: Number(borrowerData.late_payments_12m) || 0,
           loan_type: borrowerData.loanType || "Personal",
+          employment_length_months: Number(borrowerData.employment_length_months) || 24,
+          liquid_assets: Number(borrowerData.liquid_assets) || 10000,
+          loan_amount_requested: Number(borrowerData.loan_amount_requested) || 50000,
+          previous_defaults: Number(borrowerData.previous_defaults) || 0,
+          education_level: borrowerData.education_level || "Bachelor",
           unstructured_notes: borrowerData.unstructured_notes || ""
         };
         
@@ -120,11 +136,15 @@ export default function BorrowerDetailPage() {
 
   if (!result) {
     return (
-      <div className="p-8 flex flex-col items-center pt-32 text-red-500">
+      <div className="p-8 flex flex-col items-center pt-32 text-rose-500">
         <ShieldAlert className="w-12 h-12 mb-4 opacity-50" />
-        <h1 className="text-2xl font-semibold mb-2">Analysis Failed</h1>
-        <p className="text-sm text-gray-400">Ensure the FastAPI backend is running.</p>
-        <Link href="/dashboard" className="text-amber-500 mt-6 inline-block font-medium hover:underline">&larr; Return to Dashboard</Link>
+        <h1 className="text-2xl font-bold font-mono tracking-widest uppercase mb-2">Analysis Failed</h1>
+        <p className="text-sm text-white/40 max-w-md text-center font-mono">
+          {errorMsg || "Ensure the FastAPI backend is running and connected."}
+        </p>
+        <Link href="/dashboard" className="mt-8 text-rose-500 hover:text-rose-400 text-sm font-bold uppercase tracking-widest font-mono">
+          &larr; Return to Dashboard
+        </Link>
       </div>
     );
   }
@@ -149,7 +169,7 @@ export default function BorrowerDetailPage() {
     <div className="p-8 print:p-0 print:bg-black print:text-white print:min-h-screen">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #09090b !important; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: black !important; }
           .print-hide { display: none !important; }
         }
       `}} />
@@ -167,7 +187,7 @@ export default function BorrowerDetailPage() {
           <div className="flex gap-4">
             <button 
               onClick={() => setSimMode(!simMode)} 
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors ${simMode ? 'bg-indigo-500 text-white' : 'bg-white/5 text-indigo-300 hover:bg-white/10'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors ${simMode ? 'bg-blue-500 text-white' : 'bg-white/5 text-blue-300 hover:bg-white/10'}`}
             >
               <SlidersHorizontal className="w-4 h-4" /> {simMode ? "Exit Sim" : "What-If Simulator"}
             </button>
@@ -184,7 +204,7 @@ export default function BorrowerDetailPage() {
           <div>
             <h1 className="text-3xl font-semibold mb-2">
               Borrower Analysis: <span className="text-amber-500 font-mono">{borrowerName || id}</span>
-              {simMode && <span className="ml-4 text-xs bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded border border-indigo-500/30 align-middle print-hide">SIMULATION MODE</span>}
+              {simMode && <span className="ml-4 text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30 align-middle print-hide">SIMULATION MODE</span>}
             </h1>
             <p className="text-gray-400 text-sm flex items-center gap-2 text-mono">
               <Cpu className="w-4 h-4" /> Model Architecture: {model_version}
@@ -193,25 +213,25 @@ export default function BorrowerDetailPage() {
         </header>
 
         {simMode && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="panel p-6 bg-indigo-500/5 border-indigo-500/20 print-hide">
-            <h3 className="text-indigo-400 font-bold mb-4 uppercase tracking-widest text-sm flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" /> Adjust Features</h3>
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="panel p-6 bg-blue-500/5 border-blue-500/20 print-hide">
+            <h3 className="text-blue-400 font-bold mb-4 uppercase tracking-widest text-sm flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" /> Adjust Features</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2 flex justify-between">Income <span>${simFeatures.income}</span></label>
-                <input type="range" min="10000" max="250000" step="5000" value={simFeatures.income} onChange={e => setSimFeatures({...simFeatures, income: Number(e.target.value)})} className="w-full accent-indigo-500" />
+                <input type="range" min="10000" max="250000" step="5000" value={simFeatures.income} onChange={e => setSimFeatures({...simFeatures, income: Number(e.target.value)})} className="w-full accent-blue-500" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2 flex justify-between">Credit Util <span>{(simFeatures.credit_utilization * 100).toFixed(0)}%</span></label>
-                <input type="range" min="0" max="1" step="0.05" value={simFeatures.credit_utilization} onChange={e => setSimFeatures({...simFeatures, credit_utilization: Number(e.target.value)})} className="w-full accent-indigo-500" />
+                <input type="range" min="0" max="1" step="0.05" value={simFeatures.credit_utilization} onChange={e => setSimFeatures({...simFeatures, credit_utilization: Number(e.target.value)})} className="w-full accent-blue-500" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2 flex justify-between">DTI Ratio <span>{(simFeatures.dti_ratio * 100).toFixed(0)}%</span></label>
-                <input type="range" min="0" max="1" step="0.05" value={simFeatures.dti_ratio} onChange={e => setSimFeatures({...simFeatures, dti_ratio: Number(e.target.value)})} className="w-full accent-indigo-500" />
+                <input type="range" min="0" max="1" step="0.05" value={simFeatures.dti_ratio} onChange={e => setSimFeatures({...simFeatures, dti_ratio: Number(e.target.value)})} className="w-full accent-blue-500" />
               </div>
             </div>
             <div className="flex justify-end gap-4 mt-6">
               <button onClick={handleResetSim} className="text-white/40 hover:text-white text-sm font-semibold transition-colors">Reset</button>
-              <button onClick={handleSimulate} disabled={simLoading} className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+              <button onClick={handleSimulate} disabled={simLoading} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-bold uppercase tracking-widest text-xs flex items-center gap-2">
                 {simLoading ? <Activity className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />} Run Simulation
               </button>
             </div>

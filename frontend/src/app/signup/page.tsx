@@ -43,10 +43,6 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-rose-500/5 blur-[150px] rounded-full pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -56,7 +52,7 @@ export default function SignupPage() {
       >
         <div className="panel p-8 md:p-10 relative overflow-hidden group">
           {/* Subtle hover effect on the panel itself */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 via-transparent to-indigo-500/0 group-hover:from-emerald-500/5 group-hover:to-indigo-500/5 transition-colors duration-700 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 via-transparent to-blue-500/0 group-hover:from-emerald-500/5 group-hover:to-blue-500/5 transition-colors duration-700 pointer-events-none"></div>
 
           <div className="flex justify-center mb-6">
             <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]">

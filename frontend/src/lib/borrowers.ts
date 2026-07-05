@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 export async function getBorrowers() {
   const colRef = collection(db, "borrowers");
   const snapshot = await getDocs(colRef);
-  
+
   if (snapshot.empty) {
     return [];
   }
@@ -15,7 +15,7 @@ export async function getBorrowers() {
     id: doc.id,
     ...doc.data()
   }));
-  
+
   // Sort by date descending
   return borrowers.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
@@ -27,7 +27,7 @@ export async function addBorrower(borrower: any) {
     riskTier: "Pending Analysis",
     probability: 0,
   };
-  
+
   const colRef = collection(db, "borrowers");
   const docRef = await addDoc(colRef, newBorrower);
   return docRef.id;

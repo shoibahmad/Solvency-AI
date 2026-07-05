@@ -6,7 +6,7 @@ import { Filter, ChevronRight, Activity, Search, ShieldAlert, Zap, Clock } from 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion } from "framer-motion";
-import { getBorrowers } from "@/lib/borrowers";
+import { getBorrowers, Borrower } from "@/lib/borrowers";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,7 +23,7 @@ const itemVariants = {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [borrowers, setBorrowers] = useState<any[]>([]);
+  const [borrowers, setBorrowers] = useState<Borrower[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterTier, setFilterTier] = useState("All");
   const [filterType, setFilterType] = useState("All");
@@ -63,12 +63,12 @@ export default function DashboardPage() {
       </div>
     );
     if (tier === "Medium Risk") return (
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(255,255,255,0.05)]">
         <Activity className="w-3.5 h-3.5" /> Med Risk
       </div>
     );
     if (tier === "Pending Analysis") return (
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(99,102,241,0.15)]">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(99,102,241,0.15)]">
         <Clock className="w-3.5 h-3.5" /> Pending
       </div>
     );
@@ -81,11 +81,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] p-6 md:p-10 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-rose-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -93,7 +90,7 @@ export default function DashboardPage() {
       >
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
           <div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
@@ -101,38 +98,38 @@ export default function DashboardPage() {
             >
               Portfolio Intelligence
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-indigo-200/60 text-lg flex items-center gap-2"
+              className="text-blue-200/60 text-lg flex items-center gap-2"
             >
-              <Activity className="w-5 h-5 text-indigo-400" />
+              <Activity className="w-5 h-5 text-blue-400" />
               Monitoring {filtered.length} active risk profiles in real-time.
             </motion.p>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
             className="flex gap-4 w-full md:w-auto"
           >
             <div className="relative group w-full md:w-64">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/30 group-focus-within:text-indigo-400 transition-colors">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/30 group-focus-within:text-blue-400 transition-colors">
                 <Search className="w-4 h-4" />
               </div>
-              <input 
-                type="text" 
-                placeholder="Search ID or Name..." 
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-white/30 outline-none transition-all focus:bg-white/10 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20"
+              <input
+                type="text"
+                placeholder="Search ID or Name..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-white/30 outline-none transition-all focus:bg-white/10 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
           </motion.div>
         </div>
 
         {/* Filters Panel */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -142,14 +139,14 @@ export default function DashboardPage() {
             <Filter className="w-4 h-4" />
             <span>Refine View</span>
           </div>
-          
+
           <div className="h-6 w-px bg-white/10 hidden md:block"></div>
-          
+
           <div className="flex flex-wrap gap-4 flex-1">
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium text-white/40 uppercase tracking-widest">Risk Tier</label>
-              <select 
-                className="bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none hover:border-white/20 transition-colors focus:ring-2 focus:ring-indigo-500/50 appearance-none cursor-pointer"
+              <select
+                className="bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none hover:border-white/20 transition-colors focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer"
                 value={filterTier}
                 onChange={e => setFilterTier(e.target.value)}
               >
@@ -162,8 +159,8 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-3">
               <label className="text-xs font-medium text-white/40 uppercase tracking-widest">Loan Type</label>
-              <select 
-                className="bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none hover:border-white/20 transition-colors focus:ring-2 focus:ring-indigo-500/50 appearance-none cursor-pointer"
+              <select
+                className="bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none hover:border-white/20 transition-colors focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer"
                 value={filterType}
                 onChange={e => setFilterType(e.target.value)}
               >
@@ -189,7 +186,7 @@ export default function DashboardPage() {
             <div className="col-span-1 text-right">Action</div>
           </div>
 
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
@@ -197,7 +194,7 @@ export default function DashboardPage() {
           >
             {loading ? (
               <div className="panel p-16 flex flex-col items-center justify-center">
-                <div className="w-8 h-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+                <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mb-4"></div>
                 <h3 className="text-xl font-medium text-white/70 mb-2">Loading Portfolios...</h3>
               </div>
             ) : filtered.length === 0 ? (
@@ -208,52 +205,52 @@ export default function DashboardPage() {
               </motion.div>
             ) : (
               filtered.map(b => (
-                <motion.div 
+                <motion.div
                   variants={itemVariants}
-                  key={b.id} 
+                  key={b.id}
                   className="group relative panel p-5 md:p-0 overflow-hidden"
                 >
-                {/* Subtle highlight gradient on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/0 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                <div className="relative md:grid grid-cols-12 gap-4 md:items-center px-0 md:px-6 py-4">
-                  
-                  <div className="col-span-2 mb-2 md:mb-0">
-                    <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">ID:</span>
-                    <span className="text-mono text-sm text-indigo-300 font-medium group-hover:text-indigo-200 transition-colors">{b.id}</span>
+                  {/* Subtle highlight gradient on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative md:grid grid-cols-12 gap-4 md:items-center px-0 md:px-6 py-4">
+
+                    <div className="col-span-2 mb-2 md:mb-0">
+                      <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">ID:</span>
+                      <span className="font-mono text-sm text-blue-300 font-medium group-hover:text-blue-200 transition-colors">{b.id}</span>
+                    </div>
+
+                    <div className="col-span-3 mb-4 md:mb-0">
+                      <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Name:</span>
+                      <span className="font-semibold text-white/90 text-base">{b.name}</span>
+                    </div>
+
+                    <div className="col-span-2 mb-4 md:mb-0">
+                      <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Type:</span>
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-white/70 text-xs font-medium">
+                        {b.loanType}
+                      </span>
+                    </div>
+
+                    <div className="col-span-2 mb-4 md:mb-0 flex md:justify-center">
+                      <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Prob:</span>
+                      <span className="font-mono font-bold text-base text-white/80">{b.probability !== undefined ? (b.probability * 100).toFixed(1) : "0.0"}%</span>
+                    </div>
+
+                    <div className="col-span-2 mb-6 md:mb-0 flex md:justify-center">
+                      <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Tier:</span>
+                      {getRiskBadge(b.riskTier)}
+                    </div>
+
+                    <div className="col-span-1 flex md:justify-end">
+                      <Link href={`/dashboard/borrower/${b.id}`} className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 text-blue-300 hover:text-blue-100 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                        Analyze <ChevronRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+
                   </div>
-                  
-                  <div className="col-span-3 mb-4 md:mb-0">
-                    <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Name:</span>
-                    <span className="font-semibold text-white/90 text-base">{b.name}</span>
-                  </div>
-                  
-                  <div className="col-span-2 mb-4 md:mb-0">
-                    <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Type:</span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-white/70 text-xs font-medium">
-                      {b.loanType}
-                    </span>
-                  </div>
-                  
-                  <div className="col-span-2 mb-4 md:mb-0 flex md:justify-center">
-                    <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Prob:</span>
-                    <span className="text-mono font-bold text-base text-white/80">{(b.probability * 100).toFixed(1)}%</span>
-                  </div>
-                  
-                  <div className="col-span-2 mb-6 md:mb-0 flex md:justify-center">
-                    <span className="md:hidden text-xs font-bold uppercase text-white/40 mr-2">Tier:</span>
-                    {getRiskBadge(b.riskTier)}
-                  </div>
-                  
-                  <div className="col-span-1 flex md:justify-end">
-                    <Link href={`/dashboard/borrower/${b.id}`} className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-indigo-500/20 border border-white/10 hover:border-indigo-500/50 text-indigo-300 hover:text-indigo-100 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                      Analyze <ChevronRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                  
-                </div>
-              </motion.div>
-            )))}
+                </motion.div>
+              )))}
           </motion.div>
         </div>
 

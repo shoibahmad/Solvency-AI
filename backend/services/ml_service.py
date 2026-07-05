@@ -41,18 +41,24 @@ def group_shap_factors(shap_values, feature_names_local):
     mapping = {
         'missed_payments_6m': 'Repayment behavior',
         'late_payments_12m': 'Repayment behavior',
+        'previous_defaults': 'Repayment behavior',
         'existing_loans': 'Indebtedness',
         'credit_utilization': 'Indebtedness',
         'dti_ratio': 'Indebtedness',
         'income': 'Indebtedness', # Income offsets indebtedness
+        'liquid_assets': 'Indebtedness', # Assets offset indebtedness
+        'loan_amount_requested': 'Indebtedness',
         'account_vintage_months': 'Credit history',
+        'employment_length_months': 'Credit history',
         'alternate_signal_risk_score': 'Alternate data'
     }
     
     for i, feature in enumerate(feature_names_local):
-        # Handle one-hot encoded categorical features (loan_type_*)
+        # Handle one-hot encoded categorical features
         if feature.startswith('loan_type_'):
             cat = 'Credit history'
+        elif feature.startswith('education_level_'):
+            cat = 'Alternate data'
         else:
             cat = mapping.get(feature, 'Alternate data')
             
@@ -68,7 +74,7 @@ def predict(borrower_features: dict):
     df = pd.DataFrame([borrower_features])
     
     # Separate categorical and numeric
-    categorical_features = ['loan_type']
+    categorical_features = ['loan_type', 'education_level']
     numeric_features = [f for f in borrower_features.keys() if f not in categorical_features]
     
     # Encode categorical

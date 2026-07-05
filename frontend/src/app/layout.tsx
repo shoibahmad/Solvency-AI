@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const outfit = Outfit({
+  variable: "--font-inter", // Keep variable name same so globals.css doesn't break
   subsets: ["latin"],
 });
 
@@ -28,8 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased min-h-screen bg-[#09090b]">
+    <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body className="antialiased min-h-screen bg-black text-white relative" suppressHydrationWarning>
+        
+        {/* Pure Black Background - No Ambient Lights or Grid */}
+
         <AuthProvider>
           <ToastProvider>
             <GlobalLoader />
