@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Activity, ArrowRight, ShieldAlert } from "lucide-react";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -12,6 +13,7 @@ export function SignupView() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Junior Underwriter");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +23,11 @@ export function SignupView() {
     setError("");
     
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: userCredential.user.email,
+        role: role
+      });
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to create account.");
@@ -33,7 +39,15 @@ export function SignupView() {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, googleProvider);
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      const userDocRef = doc(db, "users", userCredential.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          email: userCredential.user.email,
+          role: role
+        });
+      }
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to sign up with Google.");
@@ -101,6 +115,17 @@ export function SignupView() {
                 required
                 minLength={6}
               />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-white/50 uppercase tracking-widest mb-2">Requested Role</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 outline-none transition-all focus:bg-white/5 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 appearance-none"
+              >
+                <option value="Junior Underwriter" className="bg-black text-white">Normal User (Junior Underwriter)</option>
+                <option value="Admin" className="bg-black text-white">Administrator (Admin)</option>
+              </select>
             </div>
             
             <button

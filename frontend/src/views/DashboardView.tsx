@@ -28,6 +28,7 @@ export function DashboardView() {
   const [loading, setLoading] = useState(true);
   const [filterTier, setFilterTier] = useState("All");
   const [filterType, setFilterType] = useState("All");
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
   const { user, loading: authLoading } = useAuth();
 
@@ -283,9 +284,20 @@ export function DashboardView() {
                       </div>
 
                       <div className="col-span-1 flex md:justify-end">
-                        <Link href={`/dashboard/borrower/${b.id}`} className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 text-blue-300 hover:text-blue-100 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                          Analyze <ChevronRight className="w-4 h-4" />
-                        </Link>
+                        <button 
+                          onClick={() => {
+                            setAnalyzingId(b.id);
+                            router.push(`/dashboard/borrower/${b.id}`);
+                          }}
+                          disabled={analyzingId === b.id}
+                          className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 text-blue-300 hover:text-blue-100 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] disabled:opacity-50"
+                        >
+                          {analyzingId === b.id ? (
+                            <>Loading <Activity className="w-4 h-4 animate-spin" /></>
+                          ) : (
+                            <>Analyze <ChevronRight className="w-4 h-4" /></>
+                          )}
+                        </button>
                       </div>
 
                     </div>

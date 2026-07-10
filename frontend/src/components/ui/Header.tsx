@@ -7,11 +7,12 @@ import { useAuth } from "@/lib/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { db, auth } from "@/lib/firebase";
 import { useToast } from "@/components/ui/ToastProvider";
 
 export function Header() {
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
   const pathname = usePathname();
   const { showToast } = useToast();
 
@@ -20,6 +21,7 @@ export function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const initialRender = useRef(true);
 
   useEffect(() => {
@@ -52,11 +54,11 @@ export function Header() {
   }, [user, showToast]);
 
   const navItems = [
-    { path: "/dashboard", name: "DASHBOARD" },
-    { path: "/intake", name: "INTAKE" },
-    { path: "/models", name: "MODELS" },
-    { path: "/admin", name: "ADMIN" },
-    { path: "/about", name: "ABOUT" },
+    { path: "/dashboard", name: "DASHBOARD", roles: ["Admin", "Senior Underwriter", "Junior Underwriter"] },
+    { path: "/intake", name: "INTAKE", roles: ["Admin", "Senior Underwriter", "Junior Underwriter"] },
+    { path: "/models", name: "MODELS", roles: ["Admin", "Senior Underwriter", "Junior Underwriter"] },
+    { path: "/admin", name: "ADMIN", roles: ["Admin"] },
+    { path: "/about", name: "ABOUT", roles: ["Admin", "Senior Underwriter", "Junior Underwriter"] },
   ];
 
   const handleSignOut = () => {
@@ -64,25 +66,49 @@ export function Header() {
     signOut();
   };
 
+  const handleChangePassword = async () => {
+    if (user?.email) {
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        showToast(`Password reset email sent to ${user.email}`, "success");
+      } catch (error: any) {
+        showToast(error.message || "Failed to send reset email", "error");
+      }
+    }
+  };
+
+  const handleUpdateEmail = () => {
+    showToast("Email updates require administrator assistance. Please contact support.", "error");
+  };
+
+  const toggleDarkMode = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isDarkMode) {
+      setIsDarkMode(false);
+      showToast("Light mode is not available for this premium UI.", "error");
+      setTimeout(() => setIsDarkMode(true), 500);
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-black/50 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-[1400px] mx-auto h-14 flex items-center justify-between px-6">
+        <div className="max-w-[1400px] mx-auto h-14 flex items-center justify-between px-3 md:px-6">
           
           {/* Left - Premium Logo Area */}
-          <div className="flex items-center gap-10">
-            <Link href="/dashboard" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]">
+          <div className="flex items-center gap-4 md:gap-10">
+            <Link href="/dashboard" className="flex items-center gap-2 md:gap-3 group transition-opacity hover:opacity-80">
+              <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]">
                 <Activity className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="font-bold tracking-tight text-white text-lg">
+              <span className="font-bold tracking-tight text-white text-base md:text-lg whitespace-nowrap">
                 Solvency AI
               </span>
             </Link>
 
             {/* Premium Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              {navItems.map((item) => {
+              {navItems.filter(item => !item.roles || item.roles.includes(role || "Junior Underwriter")).map((item) => {
                 const isActive = item.path === pathname || (item.path !== "#" && pathname?.startsWith(item.path) && item.path !== "/");
                 return (
                   <Link
@@ -101,10 +127,10 @@ export function Header() {
           </div>
 
           {/* Right - User Actions */}
-          <div className="flex items-center gap-6" data-no-loader="true">
+          <div className="flex items-center gap-3 md:gap-6" data-no-loader="true">
             {user ? (
               <>
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <button 
                     onClick={() => { setShowNotifications(!showNotifications); setShowSettings(false); setHasNewAlert(false); }}
                     className="w-8 h-8 flex items-center justify-center text-white/40 hover:text-white transition-colors relative group"
@@ -161,8 +187,11 @@ export function Header() {
                 
                 <div className="relative">
                   {/* Profile Icon now opens Settings Menu */}
-                  <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { setShowSettings(!showSettings); setShowNotifications(false); }}>
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full border border-white/20 text-white flex items-center justify-center text-sm font-semibold uppercase shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-transform group-hover:scale-105">
+                  <div className="flex items-center gap-2 md:gap-3 cursor-pointer group flex-shrink-0" onClick={() => { setShowSettings(!showSettings); setShowNotifications(false); }}>
+                    <div className="hidden sm:flex flex-col items-end mr-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">{role}</span>
+                    </div>
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full border border-white/20 text-white flex items-center justify-center text-sm font-semibold uppercase shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-transform group-hover:scale-105">
                       {user.email?.charAt(0) || "X"}
                     </div>
                   </div>
@@ -181,20 +210,29 @@ export function Header() {
                           Account
                         </div>
                         <div className="flex flex-col gap-1">
-                          <button className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-left text-white/70 hover:text-white text-sm font-medium group">
+                          <button 
+                            onClick={handleChangePassword}
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-left text-white/70 hover:text-white text-sm font-medium group"
+                          >
                             <Key className="w-4 h-4" />
                             Change Password
                           </button>
-                          <button className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-left text-white/70 hover:text-white text-sm font-medium group">
+                          <button 
+                            onClick={handleUpdateEmail}
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 transition-colors text-left text-white/70 hover:text-white text-sm font-medium group"
+                          >
                             <Mail className="w-4 h-4" />
                             Update Email
                           </button>
-                          <label className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-colors group">
+                          <label 
+                            onClick={toggleDarkMode}
+                            className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-colors group"
+                          >
                             <span className="flex items-center gap-3 text-white/70 text-sm font-medium group-hover:text-white">
                               <Settings className="w-4 h-4" /> Dark Mode
                             </span>
-                            <div className="w-8 h-4 bg-blue-500 rounded-full relative transition-colors shadow-[0_0_8px_rgba(59,130,246,0.5)]">
-                              <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow"></div>
+                            <div className={`w-8 h-4 rounded-full relative transition-colors shadow-[0_0_8px_rgba(59,130,246,0.5)] ${isDarkMode ? 'bg-blue-500' : 'bg-gray-600'}`}>
+                              <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all ${isDarkMode ? 'right-0.5' : 'left-0.5'}`}></div>
                             </div>
                           </label>
                         </div>
@@ -203,12 +241,12 @@ export function Header() {
                   </AnimatePresence>
                 </div>
 
-                <div className="w-px h-6 bg-white/20 mx-2"></div>
+                <div className="hidden sm:block w-px h-6 bg-white/20 mx-1 md:mx-2"></div>
 
                 {/* Dedicated Logout Button */}
                 <button 
                   onClick={() => setShowLogoutAlert(true)}
-                  className="flex items-center gap-2 text-rose-400 hover:text-rose-300 transition-colors group ml-2"
+                  className="flex items-center gap-2 text-rose-400 hover:text-rose-300 transition-colors group flex-shrink-0 sm:ml-2"
                   title="Sign Out"
                 >
                   <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />

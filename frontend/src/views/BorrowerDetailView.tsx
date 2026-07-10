@@ -7,14 +7,17 @@ import Link from "next/link";
 import { SeismographPulse } from "@/components/ui/SeismographPulse";
 import { useToast } from "@/components/ui/ToastProvider";
 import { motion } from "framer-motion";
+import { useAuth } from "@/lib/AuthContext";
 import { getBorrowerById, updateBorrower } from "@/lib/borrowers";
 import Tilt from "react-parallax-tilt";
 
 export function BorrowerDetailView() {
   const { id } = useParams();
   const { showToast } = useToast();
+  const { role } = useAuth();
   
   const [loading, setLoading] = useState(true);
+  const [overrideLoading, setOverrideLoading] = useState(false);
   const [simLoading, setSimLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [borrowerName, setBorrowerName] = useState<string>("");
@@ -177,6 +180,19 @@ export function BorrowerDetailView() {
     fetchPrediction(originalFeatures, true); // re-run with original to reset UI
   };
 
+  const handleOverride = async (newTier: string) => {
+    try {
+      setOverrideLoading(true);
+      await updateBorrower(id as string, { riskTier: newTier, overridden: true, overriddenBy: role });
+      setResult({ ...result, risk_tier: newTier });
+      showToast(`Risk tier overridden to ${newTier}`, "success");
+    } catch(err: any) {
+      showToast(`Override failed: ${err.message}`, "error");
+    } finally {
+      setOverrideLoading(false);
+    }
+  };
+
   return (
     <div className="p-8 print:p-0 print:bg-black print:text-white print:min-h-screen">
       <style dangerouslySetInnerHTML={{__html: `
@@ -264,6 +280,16 @@ export function BorrowerDetailView() {
               <div className="absolute bottom-0 left-0 w-full opacity-20 z-0 mix-blend-screen pointer-events-none print-hide">
                 <SeismographPulse riskTier={risk_tier as any} />
               </div>
+
+              {(role === "Admin" || role === "Senior Underwriter") && !simMode && (
+                <div className="absolute bottom-4 left-0 w-full px-8 z-20 flex justify-center print-hide">
+                  <div className="flex gap-2 bg-black/80 backdrop-blur-md p-1.5 rounded-xl border border-white/10 shadow-2xl">
+                    <button onClick={() => handleOverride("Low Risk")} disabled={overrideLoading} className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors ${risk_tier === "Low Risk" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "text-white/40 hover:text-white hover:bg-white/10"}`}>Low</button>
+                    <button onClick={() => handleOverride("Medium Risk")} disabled={overrideLoading} className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors ${risk_tier === "Medium Risk" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "text-white/40 hover:text-white hover:bg-white/10"}`}>Med</button>
+                    <button onClick={() => handleOverride("High Risk")} disabled={overrideLoading} className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors ${risk_tier === "High Risk" ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" : "text-white/40 hover:text-white hover:bg-white/10"}`}>High</button>
+                  </div>
+                </div>
+              )}
             </div>
           </Tilt>
 
@@ -298,39 +324,61 @@ export function BorrowerDetailView() {
         </div>
 
         <div className="panel p-8 print:border print:border-white/20">
-          <h2 className="font-semibold mb-8 text-lg">Risk Contribution Vectors (SHAP)</h2>
-          <div className="space-y-6">
-            {shapEntries.map(([category, value], idx) => {
-              const widthPct = (Math.abs(value) / maxAbsShap) * 100;
-              const isPositive = value > 0;
-              
-              return (
-                <div key={category} className="grid grid-cols-12 items-center gap-4 group">
-                  <div className="col-span-3 text-right text-sm font-medium text-gray-400">{category}</div>
-                  
-                  <div className="col-span-8 flex items-center justify-center relative h-8 border-l border-r border-white/5 bg-black/20 rounded print:bg-transparent print:border-white/20">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20 z-10 print:bg-white/40"></div>
-                    
-                    <div className="absolute left-1/2 w-1/2 flex h-full items-center px-1" style={{
-                      transform: isPositive ? 'none' : 'translateX(-100%)',
-                      justifyContent: isPositive ? 'flex-start' : 'flex-end'
-                    }}>
-                      <div 
-                        className="h-4 rounded-sm print:h-3"
-                        style={{
-                          width: `${widthPct}%`,
-                          background: isPositive ? 'linear-gradient(90deg, #f59e0b, #f43f5e)' : 'linear-gradient(270deg, #10b981, #059669)',
-                          transformOrigin: isPositive ? 'left' : 'right',
-                          printColorAdjust: 'exact',
-                          WebkitPrintColorAdjust: 'exact'
-                        }}
-                      />
+          <h2 className="font-semibold mb-8 text-lg">SHAP Force Plot</h2>
+          
+          <div className="relative w-full h-12 bg-white/5 rounded-lg overflow-hidden border border-white/10 flex">
+            {/* Base Probability Marker */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/30 z-20 flex flex-col items-center">
+              <div className="text-[10px] bg-black/80 px-1 rounded -mt-4 text-white/50">Base Risk</div>
+            </div>
+
+            {/* Negative (Green) Features pushing left */}
+            <div className="w-1/2 flex justify-end h-full">
+              {shapEntries.filter(([_, v]) => v <= 0).map(([k, v], i) => {
+                const width = (Math.abs(v) / maxAbsShap) * 100;
+                return (
+                  <div key={k} className="h-full border-r border-black/20 group relative cursor-help transition-all hover:opacity-80" 
+                       style={{ width: `${Math.max(width, 2)}%`, backgroundColor: '#10b981' }}>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 z-30">
+                      <span className="text-[10px] font-bold text-black drop-shadow-md truncate px-1">{k}</span>
                     </div>
                   </div>
-                  
-                  <div className="col-span-1 text-sm font-mono font-medium" style={{ color: isPositive ? '#f43f5e' : '#10b981' }}>
-                    {isPositive ? '+' : ''}{value.toFixed(2)}
+                )
+              })}
+            </div>
+
+            {/* Positive (Red) Features pushing right */}
+            <div className="w-1/2 flex justify-start h-full">
+              {shapEntries.filter(([_, v]) => v > 0).map(([k, v], i) => {
+                const width = (Math.abs(v) / maxAbsShap) * 100;
+                return (
+                  <div key={k} className="h-full border-l border-black/20 group relative cursor-help transition-all hover:opacity-80" 
+                       style={{ width: `${Math.max(width, 2)}%`, backgroundColor: '#f43f5e' }}>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 z-30">
+                      <span className="text-[10px] font-bold text-white drop-shadow-md truncate px-1">{k}</span>
+                    </div>
                   </div>
+                )
+              })}
+            </div>
+          </div>
+          
+          {/* Legend & Details */}
+          <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/40 mt-4 mb-6">
+            <div className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-sm"></div> Reduces Risk</div>
+            <div className="flex items-center gap-2">Increases Risk <div className="w-3 h-3 bg-rose-500 rounded-sm"></div></div>
+          </div>
+
+          {/* Detailed Waterfall Table */}
+          <div className="space-y-3 mt-6">
+            {shapEntries.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(([category, value]) => {
+              const isPositive = value > 0;
+              return (
+                <div key={category} className="flex justify-between items-center border-b border-white/5 pb-2">
+                  <span className="text-sm text-gray-400 font-mono">{category}</span>
+                  <span className="text-sm font-mono font-medium" style={{ color: isPositive ? '#f43f5e' : '#10b981' }}>
+                    {isPositive ? '+' : ''}{value.toFixed(2)}
+                  </span>
                 </div>
               );
             })}
