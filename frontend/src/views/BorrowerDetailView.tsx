@@ -38,9 +38,10 @@ export function BorrowerDetailView() {
       else setLoading(true);
       setErrorMsg("");
 
-      const apiUrl = typeof window !== "undefined" 
+      const defaultApiUrl = typeof window !== "undefined" 
         ? `http://${window.location.hostname}:8000/predict`
         : "http://localhost:8000/predict";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
 
       const res = await fetch(apiUrl, {
         method: "POST",

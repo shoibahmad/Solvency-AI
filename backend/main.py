@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from dotenv import load_dotenv
+import os
 import uvicorn
 
 from services.gemini_service import extract_signals, generate_narrative
@@ -12,10 +13,14 @@ load_dotenv()
 
 app = FastAPI(title="Solvency AI API", description="AI-powered loan default prediction platform")
 
+# Retrieve allowed origins from env, default to allow all if not set
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+
 # CORS middleware for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For demo purposes
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
