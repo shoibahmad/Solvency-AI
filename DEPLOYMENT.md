@@ -96,31 +96,25 @@ Your frontend will be accessible at `http://YOUR_SERVER_IP:3000` and the API at 
 
 ---
 
-## Option 2: Managed Cloud Services (Recommended for Production)
+## Option 2: Managed Cloud Services (Unified Render Deployment)
 
-For auto-scaling, SSL termination, and zero server maintenance, split the deployment.
+For auto-scaling, SSL termination, and zero server maintenance, you can deploy both the frontend and backend together as a single Web Service on Render.
 
-### Step 1: Deploy Backend to Render (or Google Cloud Run)
-1. Create an account on [Render](https://render.com).
-2. Click **New +** > **Web Service**.
-3. Connect your GitHub repository.
-4. Set the **Root Directory** to `backend`.
-5. Render will automatically detect the `Dockerfile`.
-6. Add your Environment Variables:
-   - `GEMINI_API_KEY`: (Your key)
-   - `ALLOWED_ORIGINS`: `*` (Update this to your frontend URL later for security)
-7. Click **Deploy**. Note the URL provided (e.g., `https://solvency-api.onrender.com`).
+### Deployment Steps
+1. Push all your code (including the root `Dockerfile` and `start.sh`) to your GitHub repository.
+2. Create an account on [Render](https://render.com).
+3. Click **New +** > **Web Service**.
+4. Connect your GitHub repository.
+5. **Important:** Leave the **Root Directory** field BLANK.
+6. Render will automatically detect the `Dockerfile` at the root of the project.
+7. Scroll down to **Environment Variables** and add the following:
+   - `GEMINI_API_KEY`: (Your Google Gemini API Key)
+   - `ALLOWED_ORIGINS`: `*`
+   - `NEXT_PUBLIC_API_URL`: `/predict` *(This exact value is crucial! It tells the frontend to use the internal proxy)*
+   - Add all your `NEXT_PUBLIC_FIREBASE_*` variables exactly as they are in your `.env.global` or `.env.local` file.
+8. Click **Deploy**.
 
-### Step 2: Deploy Frontend to Vercel
-1. Create an account on [Vercel](https://vercel.com).
-2. Click **Add New Project** and connect your GitHub repository.
-3. Set the **Root Directory** to `frontend`.
-4. Add your Environment Variables:
-   - `NEXT_PUBLIC_API_URL`: The Render URL from Step 1 (e.g., `https://solvency-api.onrender.com/predict`)
-   - Add all your `NEXT_PUBLIC_FIREBASE_*` variables.
-5. Click **Deploy**. Vercel will provide your live frontend URL.
-
-*(Security Note: Once Vercel gives you a URL, go back to Render and change `ALLOWED_ORIGINS` to match your Vercel URL).*
+Render will now build your unified container (installing Python, Node, building Next.js, etc.) and launch it. You will be given a single URL (e.g., `https://solvency-app.onrender.com`) where your full-stack application will be live!
 
 ---
 

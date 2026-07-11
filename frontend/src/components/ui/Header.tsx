@@ -21,6 +21,8 @@ export function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
+  const [adminPwd, setAdminPwd] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(true);
   const initialRender = useRef(true);
 
@@ -258,6 +260,14 @@ export function Header() {
                 Sign In
               </Link>
             )}
+            
+            {/* Public Admin Access Button */}
+            <button 
+              onClick={() => setShowAdminPrompt(true)}
+              className="ml-2 px-3 py-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/50 hover:bg-rose-500/40 text-xs font-semibold transition-colors rounded-full shadow-[0_0_10px_rgba(244,63,94,0.2)]"
+            >
+              Public Admin (Pwd: admin123)
+            </button>
           </div>
         </div>
       </header>
@@ -301,6 +311,76 @@ export function Header() {
                     className="flex-1 py-3 rounded-xl bg-rose-600 text-white hover:bg-rose-500 text-sm font-semibold transition-colors shadow-[0_0_15px_rgba(225,29,72,0.4)]"
                   >
                     Sign Out
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Admin Password Prompt Modal */}
+      <AnimatePresence>
+        {showAdminPrompt && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="w-full max-w-md panel bg-black/90 p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-3xl relative overflow-hidden"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-emerald-500/10 flex items-center justify-center mb-6 rounded-full border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                  <Key className="w-8 h-8 text-emerald-500" />
+                </div>
+                
+                <h2 className="text-xl font-bold tracking-tight text-white mb-2">
+                  Admin Access
+                </h2>
+                <p className="text-white/60 text-sm mb-6">
+                  Please enter the admin password to access the public dashboard. (Password: <span className="font-bold text-emerald-400">admin123</span>)
+                </p>
+
+                <input 
+                  type="password"
+                  value={adminPwd}
+                  onChange={(e) => setAdminPwd(e.target.value)}
+                  placeholder="Enter password..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 mb-8"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && adminPwd === 'admin123') {
+                      localStorage.setItem('public_admin_access', 'true');
+                      window.location.href = '/admin';
+                    } else if (e.key === 'Enter') {
+                      showToast('Incorrect password', 'error');
+                    }
+                  }}
+                />
+
+                <div className="flex items-center gap-3 w-full">
+                  <button 
+                    onClick={() => { setShowAdminPrompt(false); setAdminPwd(""); }}
+                    className="flex-1 py-3 rounded-xl border border-white/10 text-white hover:bg-white/5 text-sm font-semibold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (adminPwd === 'admin123') {
+                        localStorage.setItem('public_admin_access', 'true');
+                        window.location.href = '/admin';
+                      } else {
+                        showToast('Incorrect password', 'error');
+                      }
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 text-sm font-semibold transition-colors shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                  >
+                    Unlock
                   </button>
                 </div>
               </div>
