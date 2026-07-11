@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Brain, Network, Zap, ShieldCheck, Database, Cpu } from "lucide-react";
 
 export function ModelsView() {
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -12,7 +12,7 @@ export function ModelsView() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };

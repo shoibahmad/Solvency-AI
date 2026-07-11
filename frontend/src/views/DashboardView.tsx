@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { getBorrowers } from "@/lib/borrowers";
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 
-const containerVariants = {
+const containerVariants: any = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
