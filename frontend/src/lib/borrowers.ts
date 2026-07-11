@@ -1,7 +1,7 @@
 import { collection, addDoc, getDocs, doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-
+export type Borrower = any;
 
 export async function getBorrowers() {
   const colRef = collection(db, "borrowers");
