@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { motion } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
 import { getBorrowerById, updateBorrower } from "@/lib/borrowers";
+import { getApiUrl } from "@/lib/api";
 import Tilt from "react-parallax-tilt";
 
 export function BorrowerDetailView() {
@@ -38,10 +39,8 @@ export function BorrowerDetailView() {
       else setLoading(true);
       setErrorMsg("");
 
-      const defaultApiUrl = typeof window !== "undefined" 
-        ? `http://${window.location.hostname}:8000/predict`
-        : "http://localhost:8000/predict";
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
+      // Use the centralized API server configuration
+      const apiUrl = getApiUrl();
 
       const res = await fetch(apiUrl, {
         method: "POST",
