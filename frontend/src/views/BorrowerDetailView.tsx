@@ -79,7 +79,7 @@ export function BorrowerDetailView() {
   useEffect(() => {
     async function loadInitial() {
       try {
-        const borrowerData = await getBorrowerById(id as string);
+        const borrowerData: any = await getBorrowerById(id as string);
         if (!borrowerData) throw new Error("Borrower record not found.");
         
         setBorrowerName(borrowerData.name || "");
