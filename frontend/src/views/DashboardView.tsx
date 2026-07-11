@@ -6,7 +6,7 @@ import { Filter, ChevronRight, Activity, Search, ShieldAlert, Zap, Clock } from 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { motion } from "framer-motion";
-import { getBorrowers, Borrower } from "@/lib/borrowers";
+import { getBorrowers } from "@/lib/borrowers";
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 
 const containerVariants = {
@@ -24,7 +24,7 @@ const itemVariants = {
 
 export function DashboardView() {
   const router = useRouter();
-  const [borrowers, setBorrowers] = useState<Borrower[]>([]);
+  const [borrowers, setBorrowers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterTier, setFilterTier] = useState("All");
   const [filterType, setFilterType] = useState("All");
